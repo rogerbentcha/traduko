@@ -14,7 +14,7 @@ use objc2::{MainThreadMarker, msg_send};
 use objc2_app_kit::{
     NSAppearance, NSAppearanceNameAqua, NSAppearanceNameDarkAqua, NSApplication, NSEvent, NSEventMask,
     NSGlassEffectView, NSScreen, NSView, NSVisualEffectBlendingMode, NSVisualEffectMaterial, NSVisualEffectState,
-    NSVisualEffectView, NSWindow, NSWindowCollectionBehavior, NSWindowOrderingMode,
+    NSVisualEffectView, NSWindow, NSWindowAnimationBehavior, NSWindowCollectionBehavior, NSWindowOrderingMode,
 };
 use objc2_foundation::{NSPoint, NSRect, NSSize};
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
@@ -113,10 +113,14 @@ pub fn capture_rect(win: &NSWindow) -> Option<Rect> {
 }
 
 pub fn show(win: &NSWindow) {
+    // Back to the window's own animation, which the close below switches off.
+    win.setAnimationBehavior(NSWindowAnimationBehavior::UtilityWindow);
     win.orderFrontRegardless();
 }
 
 pub fn hide(win: &NSWindow) {
+    // Closing is instant: the window does not fade out.
+    win.setAnimationBehavior(NSWindowAnimationBehavior::None);
     win.orderOut(None);
 }
 
